@@ -31,7 +31,19 @@ php artisan laravelcms --action=clear
 
 -   It's enabled after install by default. You can see a Translator tab when you edit a page.
 -   Go to the translator plugin setting page, change the api_provider to baidu or google.
--   Set up app_id and app_key from the baidu or google translate api page.
+-   Set up app_id and app_key from the baidu or google translate api page. eg.
+
+```json
+{
+    "blade_file": "translator",
+    "tab_name": "<i class='fas fa-language mr-1'></i>__(translator)",
+    "php_class": "App\\LaravelCms\\Plugins\\Translator\\Controllers\\TranslatorController",
+    "api_provider": "baidu",
+    "app_id": "201911000357",
+    "app_key": "cX6xUKysHBXaH"
+}
+```
+
 -   Note: Google translate API not support before 1.0 version.
 
 ## How to change the settings?
