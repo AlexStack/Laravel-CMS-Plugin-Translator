@@ -1,0 +1,47 @@
+{
+    "name": "alexstack/laravel-cms-plugin-translator",
+    "description": "Translate content when you add or edit a page",
+    "type": "amila-laravel-cms-plugin",
+    "homepage": "https://github.com/AlexStack/Laravel-CMS-Plugin-Translator",
+    "keywords": [
+        "laravel",
+        "amila laravel cms",
+        "translate",
+        "amila laravel cms plugin"
+    ],
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/AlexStack/Laravel-CMS-Plugin-Translator/issues"
+    },
+    "authors": [{
+        "name": "Alex",
+        "homepage": "https://github.com/AlexStack/Laravel-CMS-Plugin-Translator"
+    }],
+    "require": {
+        "php": ">=7.0.0",
+        "alexstack/laravel-cms": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Amila\\LaravelCms\\Plugins\\Translator\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Amila\\LaravelCms\\Plugins\\Translator\\LaravelCmsPluginServiceProvider"
+            ]
+        },
+        "laravel-cms": {
+            "plugin-param-name": "page-tab-translator"
+        }
+    },
+    "scripts": {
+        "post-package-install": [
+            "php artisan migrate --path=./vendor/alexstack/laravel-cms-plugin-translator/src/database/migrations/",
+            "php artisan vendor:publish --provider=Amila\\LaravelCms\\Plugins\\Translator\\LaravelCmsPluginServiceProvider",
+            "php artisan laravelcms --action=clear"
+        ]
+    }
+}
