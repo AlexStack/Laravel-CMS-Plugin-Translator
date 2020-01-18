@@ -1,7 +1,7 @@
 # Translate content online by Baidu AI or Google AI
 
 -   This is an Amila Laravel CMS Plugin
--   Translate content online
+-   Translate content online via Baidu FanYi API or Google Translate API
 
 ## Install it via the backend
 
@@ -30,7 +30,9 @@ php artisan laravelcms --action=clear
 ## How to use it?
 
 -   It's enabled after install by default. You can see a Translator tab when you edit a page.
--   You don't need to do anything after install
+-   Go to the translator plugin setting page, change the api_provider to baidu or google.
+-   Set up app_id and app_key from the baidu or google translate api page.
+-   Note: Google translate API not support before 1.0 version.
 
 ## How to change the settings?
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Amila\LaravelCms\Plugins\SubPage;
+namespace Amila\LaravelCms\Plugins\Translator;
 
 use Illuminate\Support\ServiceProvider;
 
