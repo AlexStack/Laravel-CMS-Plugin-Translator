@@ -1,12 +1,13 @@
 {
     "name": "alexstack/laravel-cms-plugin-translator",
-    "description": "Translate content when you add or edit a page",
+    "description": "Automatically translate content via Baidu FanYi API or Google Translate API when you add or edit a page",
     "type": "amila-laravel-cms-plugin",
     "homepage": "https://github.com/AlexStack/Laravel-CMS-Plugin-Translator",
     "keywords": [
         "laravel",
         "amila laravel cms",
         "translate",
+        "translator",
         "amila laravel cms plugin"
     ],
     "license": "MIT",
