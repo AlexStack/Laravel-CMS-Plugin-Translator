@@ -102,15 +102,25 @@ class TranslatorController extends Controller
             if ('google_free_002' == $plugin_settings['app_key']) {
                 // https://github.com/Stichoza/google-translate-php
                 // Need the end-user install via composer first
-
-                $tr         = new \Stichoza\GoogleTranslate\GoogleTranslate($form_data['translate_to'], $form_data['translate_from'], ['verify' => false]);
-                $api_result = $tr->translate($form_data['translate_content']);
+                try {
+                    $tr         = new \Stichoza\GoogleTranslate\GoogleTranslate($form_data['translate_to'], $form_data['translate_from'], ['verify' => false]);
+                    $api_result = $tr->translate($form_data['translate_content']);
+                } catch (\Exception $e) {
+                    exit($e->getMessage());
+                }
             } else {
                 // https://github.com/dejurin/php-google-translate-for-free
                 // Need copy the class code to the GoogleTranslateForFree.php
-
-                $tr         = new GoogleTranslateForFree();
-                $api_result = $tr->translate($form_data['translate_from'], $form_data['translate_to'], $form_data['translate_content'], 2);
+                try {
+                    $tr = new GoogleTranslateForFree();
+                    // google_free translate max character limit 5000
+                    if (strlen(urlencode($form_data['translate_content'])) >= 5000) {
+                        $form_data['translate_content'] = urldecode(substr(urlencode($form_data['translate_content']), 0, 4999));
+                    }
+                    $api_result = $tr->translate($form_data['translate_from'], $form_data['translate_to'], $form_data['translate_content'], 2).$plugin_settings['app_key'];
+                } catch (\Exception $e) {
+                    exit($e->getMessage());
+                }
             }
 
             if ($api_result) {

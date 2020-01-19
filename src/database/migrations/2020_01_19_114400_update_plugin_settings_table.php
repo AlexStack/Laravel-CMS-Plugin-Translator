@@ -27,13 +27,13 @@ class UpdatePluginSettingsTable extends Migration
             'sort_value'      => 20,
             'abstract'        => 'Automatically translate content via Google AI or Baidu AI. <a href="https://github.com/AlexStack/Laravel-CMS-Plugin-Translator#where-can-i-get-the-app_id--app_key" target="_blank"><i class="fas fa-link mr-1"></i>Tutorial</a>',
             'param_value'     => '{
+    "api_provider": "Google_Free",
+    "app_id": "google_free_001",
+    "app_key": "google_free_001",                
     "plugin_name": "Content Translator",
     "blade_file": "translator",
     "tab_name": "<i class=\'fas fa-language mr-1\'></i>__(translator)",
-    "php_class": "App\\\\LaravelCms\\\\Plugins\\\\Translator\\\\Controllers\\\\TranslatorController",
-    "api_provider": "Google_Free",
-    "app_id": "google_free_001",
-    "app_key": "google_free_001"
+    "php_class": "App\\\\LaravelCms\\\\Plugins\\\\Translator\\\\Controllers\\\\TranslatorController"
 }',
         ];
         LaravelCmsSetting::UpdateOrCreate(

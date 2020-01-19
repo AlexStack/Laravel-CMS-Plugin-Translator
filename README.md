@@ -1,7 +1,7 @@
 # Translate content online by Baidu AI or Google AI
 
 -   This is an Amila Laravel CMS Plugin
--   Automatically translate content online via Baidu FanYi API or Google Translate API
+-   Automatically translate content online via Baidu FanYi API or Google Translate API or Google Translate Free Version
 
 ## Install it via the backend
 
@@ -66,7 +66,7 @@ php artisan laravelcms --action=clear
 
 ```json
 {
-    "api_provider": "google",
+    "api_provider": "google", // NOT SUPPORT YET
     "app_id": "AizSxUKysHBsds2", // Translation API KEY
     "app_key": "AizSxUKysHBsds2" // Translation API KEY
 }
@@ -94,6 +94,8 @@ php artisan laravelcms --action=clear
     "app_key": "google_free_002"
 }
 ```
+
+-   Limitations of free Google translate: (1) Google only allows a maximum of 5000 characters to be translated at once. If you want to translate a longer text, you can split it to shorter parts, and translate them one-by-one. (2) 503,429,403 error it is most likely that Google has banned your external IP address and/or requires you to solve a CAPTCHA. This is not a bug in this package. Google has become stricter, and it seems like they keep lowering the number of allowed requests per IP per a certain amount of time. You may need to wait 12-36 hours. [More details](https://github.com/Stichoza/google-translate-php#known-limitations)
 
 ## Improve this plugin & documents
 
