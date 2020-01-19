@@ -32,7 +32,7 @@ class UpdatePluginSettingsTable extends Migration
     "php_class": "App\\\\LaravelCms\\\\Plugins\\\\Translator\\\\Controllers\\\\TranslatorController",
     "api_provider": "google_free",
     "app_id": "google_free_001",
-    "app_key": "google_free_002"
+    "app_key": "google_free_001"
 }',
         ];
         LaravelCmsSetting::UpdateOrCreate(
