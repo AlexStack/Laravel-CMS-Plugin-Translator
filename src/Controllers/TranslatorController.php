@@ -126,7 +126,7 @@ class TranslatorController extends Controller
             // $this->helper->debug([$new_content, $form_data]);
         }
 
-        $this->helper->debug($api_result);
+        // $this->helper->debug($api_result);
         if (isset($new_content)) {
             $page->update([$form_data['translate_result_add_to_field']=>$new_content]);
         }
