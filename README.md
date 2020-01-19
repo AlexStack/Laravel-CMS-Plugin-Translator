@@ -61,6 +61,14 @@ php artisan laravelcms --action=clear
 -   Set both app_id & app_key to google_free_001, then our CMS will use package https://github.com/dejurin/php-google-translate-for-free to do the translate. (It's the default)
 -   Set both app_id & app_key to google_free_002, then our CMS will use the package https://github.com/Stichoza/google-translate-php to do the translate, YOU NEED INSTALL THE PACKAGE VIA COMMAND LINE FIRST: composer require stichoza/google-translate-php
 
+```json
+{
+    "api_provider": "google_free",
+    "app_id": "google_free_002",
+    "app_key": "google_free_002"
+}
+```
+
 ## Improve this plugin & documents
 
 -   You are very welcome to improve this plugin and how to use documents

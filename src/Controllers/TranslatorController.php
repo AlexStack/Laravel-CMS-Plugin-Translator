@@ -110,7 +110,7 @@ class TranslatorController extends Controller
                 // Need copy the class code to the GoogleTranslateForFree.php
 
                 $tr         = new GoogleTranslateForFree();
-                $api_result = $tr->translate($form_data['translate_from'], $form_data['translate_to'], $form_data['translate_content'], 2).$plugin_settings['app_key'];
+                $api_result = $tr->translate($form_data['translate_from'], $form_data['translate_to'], $form_data['translate_content'], 2);
             }
 
             if ($api_result) {
