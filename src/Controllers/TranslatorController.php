@@ -123,7 +123,7 @@ class TranslatorController extends Controller
                 $new_content = $page[$form_data['translate_result_add_to_field']].$translate_result;
             }
 
-            $this->helper->debug([$new_content, $form_data]);
+            // $this->helper->debug([$new_content, $form_data]);
         }
 
         $this->helper->debug($api_result);

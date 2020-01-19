@@ -31,4 +31,7 @@
     "translate_content", 'type'=>'textarea' ])
 </div>
 </div>
-<div class="pb-5 mb-5"></div>
+<div class="pb-5 mb-5 text-light">
+    Translate provider: {{$helper->s('plugin.page-tab-translator.api_provider')}}
+    ( {{$helper->s('plugin.page-tab-translator.app_id')}} )
+</div>
