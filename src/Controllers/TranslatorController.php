@@ -117,7 +117,7 @@ class TranslatorController extends Controller
                     if (strlen(urlencode($form_data['translate_content'])) >= 5000) {
                         $form_data['translate_content'] = urldecode(substr(urlencode($form_data['translate_content']), 0, 4999));
                     }
-                    $api_result = $tr->translate($form_data['translate_from'], $form_data['translate_to'], $form_data['translate_content'], 2).$plugin_settings['app_key'];
+                    $api_result = $tr->translate($form_data['translate_from'], $form_data['translate_to'], $form_data['translate_content'], 2);
                 } catch (\Exception $e) {
                     exit($e->getMessage());
                 }
