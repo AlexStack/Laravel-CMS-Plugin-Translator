@@ -11,7 +11,7 @@ class TranslatorController extends Controller
     private $user = null;
     private $helper;
 
-    private $app_id = null;
+    private $app_id  = null;
     private $app_key = null;
 
     public function __construct()
@@ -31,18 +31,19 @@ class TranslatorController extends Controller
     {
         // set a default select box value to the form
         // any better idea than change the $_GET?
-        $_GET['translate_to'] = $_COOKIE['translate_to'] ?? $this->helper->s('template.frontend_language');
+        $_GET['translate_to']   = $_COOKIE['translate_to'] ?? $this->helper->s('template.frontend_language');
         $data['translate_from'] = $_COOKIE['translate_from'] ?? 'en';
 
         $_GET['append_source_content'] = $_COOKIE['append_source_content'] ?? 'yes';
 
         $_GET['translate_result_add_to_field'] = $_COOKIE['translate_result_add_to_field'] ?? 'main_content';
 
-        if ($plugin_settings['api_provider'] == 'baidu') {
-            $data['translate_languages'] = ["en"=>"English", "zh"=>"Chinese", "epa"=>"Spanish", "ara"=>"Arabic", "jp"=>"Japanese", "hi"=>"Hindi", "pt"=>"Portuguese", "fra"=>"French", "ru"=>"Russian", "de"=>"German", "kor"=>"Korean", "it"=>"Italian", "th"=>"Thai"];
+        if ('baidu' == strtolower($plugin_settings['api_provider'])) {
+            $data['translate_languages'] = ['en'=>'English', 'zh'=>'Chinese', 'epa'=>'Spanish', 'ara'=>'Arabic', 'jp'=>'Japanese', 'hi'=>'Hindi', 'pt'=>'Portuguese', 'fra'=>'French', 'ru'=>'Russian', 'de'=>'German', 'kor'=>'Korean', 'it'=>'Italian', 'th'=>'Thai'];
         } else {
-            $data['translate_languages'] = ["en"=>"English", "zh"=>"Chinese", "es"=>"Spanish", "ar"=>"Arabic", "ja"=>"Japanese", "hi"=>"Hindi", "pt"=>"Portuguese", "fr"=>"French", "ru"=>"Russian", "de"=>"German", "ko"=>"Korean", "it"=>"Italian", "la"=>"Latin"];
+            $data['translate_languages'] = ['en'=>'English', 'zh'=>'Chinese', 'es'=>'Spanish', 'ar'=>'Arabic', 'ja'=>'Japanese', 'hi'=>'Hindi', 'pt'=>'Portuguese', 'fr'=>'French', 'ru'=>'Russian', 'de'=>'German', 'ko'=>'Korean', 'it'=>'Italian', 'la'=>'Latin'];
         }
+
         return $data;
     }
 
@@ -56,11 +57,12 @@ class TranslatorController extends Controller
 
         $page->translate_result_add_to_field = $_COOKIE['translate_result_add_to_field'] ?? 'main_content';
 
-        if ($plugin_settings['api_provider'] == 'baidu') {
-            $data['translate_languages'] = ["en"=>"English", "zh"=>"Chinese", "epa"=>"Spanish", "ara"=>"Arabic", "jp"=>"Japanese", "hi"=>"Hindi", "pt"=>"Portuguese", "fra"=>"French", "ru"=>"Russian", "de"=>"German", "kor"=>"Korean", "it"=>"Italian", "th"=>"Thai"];
+        if ('baidu' == strtolower($plugin_settings['api_provider'])) {
+            $data['translate_languages'] = ['en'=>'English', 'zh'=>'Chinese', 'epa'=>'Spanish', 'ara'=>'Arabic', 'jp'=>'Japanese', 'hi'=>'Hindi', 'pt'=>'Portuguese', 'fra'=>'French', 'ru'=>'Russian', 'de'=>'German', 'kor'=>'Korean', 'it'=>'Italian', 'th'=>'Thai'];
         } else {
-            $data['translate_languages'] = ["en"=>"English", "zh"=>"Chinese", "es"=>"Spanish", "ar"=>"Arabic", "ja"=>"Japanese", "hi"=>"Hindi", "pt"=>"Portuguese", "fr"=>"French", "ru"=>"Russian", "de"=>"German", "ko"=>"Korean", "it"=>"Italian", "la"=>"Latin"];
+            $data['translate_languages'] = ['en'=>'English', 'zh'=>'Chinese', 'es'=>'Spanish', 'ar'=>'Arabic', 'ja'=>'Japanese', 'hi'=>'Hindi', 'pt'=>'Portuguese', 'fr'=>'French', 'ru'=>'Russian', 'de'=>'German', 'ko'=>'Korean', 'it'=>'Italian', 'la'=>'Latin'];
         }
+
         return $data;
     }
 
@@ -71,34 +73,60 @@ class TranslatorController extends Controller
 
     public function update($form_data, $page, $plugin_settings)
     {
-        if (trim($form_data['translate_content']) == '') {
+        if ('' == trim($form_data['translate_content'])) {
             return false;
         }
-        if ($plugin_settings['api_provider'] == 'baidu') {
-            $this->app_id = $plugin_settings['app_id'];
+        if ('baidu' == $plugin_settings['api_provider']) {
+            $this->app_id  = $plugin_settings['app_id'];
             $this->app_key = $plugin_settings['app_key'];
 
             $api_result = $this->baiduTranslate($form_data['translate_content'], $form_data['translate_from'], $form_data['translate_to']);
             if (isset($api_result['trans_result'][0]['dst'])) {
                 $translate_result = '<div class="translate-content">';
                 foreach ($api_result['trans_result'] as $rs) {
-                    if ($form_data['append_source_content'] == 'yes') {
-                        $translate_result .= '<div class="src">' . $rs['src'] . '</div>';
+                    if ('yes' == $form_data['append_source_content']) {
+                        $translate_result .= '<div class="src">'.$rs['src'].'</div>';
                     }
-                    $translate_result .= '' . $rs['dst'] . '<br/><br/>';
+                    $translate_result .= ''.$rs['dst'].'<br/><br/>';
                 }
                 $translate_result .= '</div>';
-                $new_content = $page[$form_data['translate_result_add_to_field']] . $translate_result;
+                $new_content = $page[$form_data['translate_result_add_to_field']].$translate_result;
             } else {
                 if (request()->debug) {
                     $this->helper->debug($api_result);
                 }
+
                 return false;
             }
+        } elseif ('google_free' == $plugin_settings['api_provider']) {
+            if ('google_free_002' == $plugin_settings['app_key']) {
+                // https://github.com/Stichoza/google-translate-php
+                // Need the end-user install via composer first
+
+                $tr         = new \Stichoza\GoogleTranslate\GoogleTranslate($form_data['translate_to'], $form_data['translate_from'], ['verify' => false]);
+                $api_result = $tr->translate($form_data['translate_content']);
+            } else {
+                // https://github.com/dejurin/php-google-translate-for-free
+                // Need copy the class code to the GoogleTranslateForFree.php
+
+                $tr         = new GoogleTranslateForFree();
+                $api_result = $tr->translate($form_data['translate_from'], $form_data['translate_to'], $form_data['translate_content'], 2).$plugin_settings['app_key'];
+            }
+
+            if ($api_result) {
+                $translate_result = '<div class="translate-content">'.nl2br($api_result).'</div>';
+
+                if ('yes' == $form_data['append_source_content']) {
+                    $translate_result .= '<div class="pt-3 source-content"><hr class="source-hr" />'.nl2br($form_data['translate_content']).'</div>';
+                }
+
+                $new_content = $page[$form_data['translate_result_add_to_field']].$translate_result;
+            }
+
+            $this->helper->debug([$new_content, $form_data]);
         }
 
-
-        // $this->helper->debug($api_result);
+        $this->helper->debug($api_result);
         if (isset($new_content)) {
             $page->update([$form_data['translate_result_add_to_field']=>$new_content]);
         }
@@ -120,14 +148,13 @@ class TranslatorController extends Controller
      * Other methods.
      */
 
-
     // baidu FanYi translate
     public function baiduTranslate($query, $from, $to)
     {
         $app_id  = $this->app_id;
         $app_key = $this->app_key;
         if (strlen($app_id) < 10 || strlen($app_key) < 10) {
-            exit("Please edit the app_id & app_key in the translator plugin setting page, you can get them from https://api.fanyi.baidu.com/");
+            exit('Please edit the app_id & app_key in the translator plugin setting page, you can get them from https://api.fanyi.baidu.com/');
         }
 
         $args = [
@@ -153,8 +180,6 @@ class TranslatorController extends Controller
         return $ret;
     }
 
-
-
     //发起网络请求
     public function baiduCall($url, $args=null, $method='post', $testflag = 0, $timeout = 10, $headers=[])
     {
@@ -173,8 +198,6 @@ class TranslatorController extends Controller
 
         return $ret;
     }
-
-
 
     public function baiduCallOnce($url, $args=null, $method='post', $withCookie = false, $timeout = 10, $headers=[])
     {
@@ -207,8 +230,6 @@ class TranslatorController extends Controller
 
         return $r;
     }
-
-
 
     public function baiduConvert(&$args)
     {

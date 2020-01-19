@@ -50,6 +50,17 @@ php artisan laravelcms --action=clear
 }
 ```
 
+## Where can I get the app_id & app_key
+
+-   Option 1: Provider Baidu, From https://api.fanyi.baidu.com/, free, only 1 translate allowed per second
+-   Option 2: Provider Google, From https://cloud.google.com/translate/docs/
+
+## Use free Google translate
+
+-   Set provider to Google_Free
+-   Set both app_id & app_key to google_free_001, then our CMS will use package https://github.com/dejurin/php-google-translate-for-free to do the translate. (It's the default)
+-   Set both app_id & app_key to google_free_002, then our CMS will use the package https://github.com/Stichoza/google-translate-php to do the translate, YOU NEED INSTALL THE PACKAGE VIA COMMAND LINE FIRST: composer require stichoza/google-translate-php
+
 ## Improve this plugin & documents
 
 -   You are very welcome to improve this plugin and how to use documents

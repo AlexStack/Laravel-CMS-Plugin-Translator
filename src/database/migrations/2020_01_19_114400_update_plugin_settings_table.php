@@ -30,11 +30,9 @@ class UpdatePluginSettingsTable extends Migration
     "blade_file": "translator",
     "tab_name": "<i class=\'fas fa-language mr-1\'></i>__(translator)",
     "php_class": "App\\\\LaravelCms\\\\Plugins\\\\Translator\\\\Controllers\\\\TranslatorController",
-    "api_provider": "baidu",
-    "app_id": "",
-    "app_key": "",
-    "append_source_content": "yes"
-
+    "api_provider": "google_free",
+    "app_id": "google_free_001",
+    "app_key": "google_free_002"
 }',
         ];
         LaravelCmsSetting::UpdateOrCreate(
