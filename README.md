@@ -52,16 +52,24 @@ php artisan laravelcms --action=clear
 
 ## Where can I get the app_id & app_key
 
--   Option 1: Provider Baidu, From https://api.fanyi.baidu.com/, free, only 1 translate allowed per second
+-   Option 1: Provider Baidu, From https://api.fanyi.baidu.com/, FREE, only 1 translate allowed per second
 
-````json
+```json
 {
     "api_provider": "Baidu",
     "app_id": "201911000357",
     "app_key": "cX6xUKysHBXaH"
 }
+```
+
 -   Option 2: Provider Google, From https://cloud.google.com/translate/docs/
 
+````json
+{
+    "api_provider": "google",
+    "app_id": "201911000357",
+    "app_key": "cX6xUKysHBXaH"
+}
 ## Use free Google translate
 
 -   Set provider to Google_Free
