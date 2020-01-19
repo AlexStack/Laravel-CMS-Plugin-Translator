@@ -67,8 +67,8 @@ php artisan laravelcms --action=clear
 ```json
 {
     "api_provider": "google",
-    "app_id": "AizSxUKysHBsds2", // API KEY
-    "app_key": "AizSxUKysHBsds2" // API KEY
+    "app_id": "AizSxUKysHBsds2", // Translation API KEY
+    "app_key": "AizSxUKysHBsds2" // Translation API KEY
 }
 ```
 
