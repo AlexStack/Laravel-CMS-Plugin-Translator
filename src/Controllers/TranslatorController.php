@@ -76,7 +76,7 @@ class TranslatorController extends Controller
         if ('' == trim($form_data['translate_content'])) {
             return false;
         }
-        if ('baidu' == $plugin_settings['api_provider']) {
+        if ('baidu' == strtolower($plugin_settings['api_provider'])) {
             $this->app_id  = $plugin_settings['app_id'];
             $this->app_key = $plugin_settings['app_key'];
 
@@ -98,7 +98,7 @@ class TranslatorController extends Controller
 
                 return false;
             }
-        } elseif ('google_free' == $plugin_settings['api_provider']) {
+        } elseif ('google_free' == strtolower($plugin_settings['api_provider'])) {
             if ('google_free_002' == $plugin_settings['app_key']) {
                 // https://github.com/Stichoza/google-translate-php
                 // Need the end-user install via composer first
