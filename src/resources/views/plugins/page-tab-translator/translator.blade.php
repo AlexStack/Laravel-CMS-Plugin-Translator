@@ -32,7 +32,7 @@
     "translate_content", 'type'=>'textarea' ])
 </div>
 <div class="col-md-12 pb-5 mb-5 text-secondary">
-    Translate character length: <span id="character-length">0</span> / suggested max 5000
+    Translate Content character length: <span id="character-length">0</span> / suggested max 5000
 </div>
 
 </div>

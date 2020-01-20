@@ -62,17 +62,17 @@ php artisan laravelcms --action=clear
 }
 ```
 
--   Option 2: Provider Google, From https://cloud.google.com/translate/docs/
+-   Option 2: Provider Google, Advanced version. NOT SUPPORT YET. From https://cloud.google.com/translate/docs/, Need to pay for what you use, price is \$20 per million characters in 2020.
 
 ```json
 {
-    "api_provider": "google", // NOT SUPPORT YET
-    "app_id": "AizSxUKysHBsds2", // Translation API KEY
-    "app_key": "AizSxUKysHBsds2" // Translation API KEY
+    "api_provider": "google",
+    "app_id": "AizSxUKysHBsds2",
+    "app_key": "AizSxUKysHBsds2"
 }
 ```
 
-## Use free Google translate
+## Use the free Google translate
 
 -   Set provider to Google_Free
 -   Option 1: Set both app_id & app_key to google_free_001, then our CMS will use package https://github.com/dejurin/php-google-translate-for-free to do the translate. (It's the default setting after install)
