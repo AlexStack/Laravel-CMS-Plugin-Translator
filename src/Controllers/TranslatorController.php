@@ -11,8 +11,10 @@ class TranslatorController extends Controller
     private $user = null;
     private $helper;
 
-    private $app_id  = null;
-    private $app_key = null;
+    private $app_id          = null;
+    private $app_key         = null;
+    private $google_lang_ary = ['en'=>'English', 'zh'=>'Chinese', 'es'=>'Spanish', 'ar'=>'Arabic', 'ja'=>'Japanese', 'hi'=>'Hindi', 'pt'=>'Portuguese', 'fr'=>'French', 'ru'=>'Russian', 'de'=>'German', 'ko'=>'Korean', 'it'=>'Italian', 'la'=>'Latin'];
+    private $baidu_lang_ary  = ['en'=>'English', 'zh'=>'Chinese', 'epa'=>'Spanish', 'ara'=>'Arabic', 'jp'=>'Japanese', 'hi'=>'Hindi', 'pt'=>'Portuguese', 'fra'=>'French', 'ru'=>'Russian', 'de'=>'German', 'kor'=>'Korean', 'it'=>'Italian', 'th'=>'Thai'];
 
     public function __construct()
     {
@@ -29,19 +31,20 @@ class TranslatorController extends Controller
 
     public function create($form_data, $page, $plugin_settings)
     {
-        // set a default select box value to the form
-        // any better idea than change the $_GET?
+        // set a default select box value to the form without change the blade includes
+        // any better idea than change the $_GET? request()->merge() not working
+
         $_GET['translate_to']   = $_COOKIE['translate_to'] ?? $this->helper->s('template.frontend_language');
-        $data['translate_from'] = $_COOKIE['translate_from'] ?? 'en';
+        $_GET['translate_from'] = $_COOKIE['translate_from'] ?? 'en';
 
         $_GET['append_source_content'] = $_COOKIE['append_source_content'] ?? 'yes';
 
         $_GET['translate_result_add_to_field'] = $_COOKIE['translate_result_add_to_field'] ?? 'main_content';
 
         if ('baidu' == strtolower($plugin_settings['api_provider'])) {
-            $data['translate_languages'] = ['en'=>'English', 'zh'=>'Chinese', 'epa'=>'Spanish', 'ara'=>'Arabic', 'jp'=>'Japanese', 'hi'=>'Hindi', 'pt'=>'Portuguese', 'fra'=>'French', 'ru'=>'Russian', 'de'=>'German', 'kor'=>'Korean', 'it'=>'Italian', 'th'=>'Thai'];
+            $data['translate_languages'] = $this->baidu_lang_ary;
         } else {
-            $data['translate_languages'] = ['en'=>'English', 'zh'=>'Chinese', 'es'=>'Spanish', 'ar'=>'Arabic', 'ja'=>'Japanese', 'hi'=>'Hindi', 'pt'=>'Portuguese', 'fr'=>'French', 'ru'=>'Russian', 'de'=>'German', 'ko'=>'Korean', 'it'=>'Italian', 'la'=>'Latin'];
+            $data['translate_languages'] = $this->google_lang_ary;
         }
 
         return $data;
@@ -58,9 +61,13 @@ class TranslatorController extends Controller
         $page->translate_result_add_to_field = $_COOKIE['translate_result_add_to_field'] ?? 'main_content';
 
         if ('baidu' == strtolower($plugin_settings['api_provider'])) {
-            $data['translate_languages'] = ['en'=>'English', 'zh'=>'Chinese', 'epa'=>'Spanish', 'ara'=>'Arabic', 'jp'=>'Japanese', 'hi'=>'Hindi', 'pt'=>'Portuguese', 'fra'=>'French', 'ru'=>'Russian', 'de'=>'German', 'kor'=>'Korean', 'it'=>'Italian', 'th'=>'Thai'];
+            $data['translate_languages'] = $this->baidu_lang_ary;
         } else {
-            $data['translate_languages'] = ['en'=>'English', 'zh'=>'Chinese', 'es'=>'Spanish', 'ar'=>'Arabic', 'ja'=>'Japanese', 'hi'=>'Hindi', 'pt'=>'Portuguese', 'fr'=>'French', 'ru'=>'Russian', 'de'=>'German', 'ko'=>'Korean', 'it'=>'Italian', 'la'=>'Latin'];
+            $data['translate_languages'] = $this->google_lang_ary;
+        }
+
+        if ('translateCmsLangFile' == request()->action) {
+            $this->translateCmsLangFile();
         }
 
         return $data;
@@ -76,7 +83,7 @@ class TranslatorController extends Controller
         if ('' == trim($form_data['translate_content'])) {
             return false;
         }
-        if ('baidu' == strtolower($plugin_settings['api_provider'])) {
+        if ('baidu' == $plugin_settings['api_provider']) {
             $this->app_id  = $plugin_settings['app_id'];
             $this->app_key = $plugin_settings['app_key'];
 
@@ -98,7 +105,7 @@ class TranslatorController extends Controller
 
                 return false;
             }
-        } elseif ('google_free' == strtolower($plugin_settings['api_provider'])) {
+        } elseif ('google_free' == $plugin_settings['api_provider']) {
             if ('google_free_002' == $plugin_settings['app_key']) {
                 // https://github.com/Stichoza/google-translate-php
                 // Need the end-user install via composer first
@@ -106,6 +113,7 @@ class TranslatorController extends Controller
                     $tr         = new \Stichoza\GoogleTranslate\GoogleTranslate($form_data['translate_to'], $form_data['translate_from'], ['verify' => false]);
                     $api_result = $tr->translate($form_data['translate_content']);
                 } catch (\Exception $e) {
+                    echo $plugin_settings['app_key'].'<hr>';
                     exit($e->getMessage());
                 }
             } else {
@@ -119,6 +127,7 @@ class TranslatorController extends Controller
                     }
                     $api_result = $tr->translate($form_data['translate_from'], $form_data['translate_to'], $form_data['translate_content'], 2);
                 } catch (\Exception $e) {
+                    echo $plugin_settings['app_key'].'<hr>';
                     exit($e->getMessage());
                 }
             }
@@ -133,7 +142,7 @@ class TranslatorController extends Controller
                 $new_content = $page[$form_data['translate_result_add_to_field']].$translate_result;
             }
 
-            // $this->helper->debug([$new_content, $form_data]);
+            // $this->helper->debug([$new_content,$form_data]);
         }
 
         // $this->helper->debug($api_result);
@@ -157,6 +166,170 @@ class TranslatorController extends Controller
     /*
      * Other methods.
      */
+
+    // translate cms.php array one by one via baidu ai
+    public function translateCmsLangFile()
+    {
+        $this->app_id   = $this->helper->s('plugin.page-tab-translator.app_id');
+        $this->app_key  = $this->helper->s('plugin.page-tab-translator.app_key');
+        $translate_from = request()->translate_from ?? 'en';
+        $translate_to   = request()->translate_to ?? 'es';
+        $file           = request()->file ?? 'cms.php';
+        if (! isset($this->baidu_lang_ary[$translate_to])) {
+            exit('wrong $translate_to '.$translate_to);
+        }
+        if ('zh' == $translate_to || 'en' == $translate_to) {
+            exit('Not allowed $translate_to '.$translate_to);
+        }
+        $source_file = base_path('resources/lang/vendor/laravel-cms/'.$translate_from.'/'.$file);
+        $target_file = base_path('resources/lang/vendor/laravel-cms/'.$translate_to.'/'.$file);
+        if (! file_exists($source_file)) {
+            exit($source_file.' not exists');
+        }
+        $source_lang_ary = include $source_file;
+        $except_ary      = [':Name', ':name', ':latest', ':current', ':number', '$helper->s(', ':BROKER'];
+        // $except_ary = [':Name',':name',':latest',':current',':number','$helper->s('];
+
+        $variable_prefix = '567.8.';
+
+        $search_ary  = array_values($except_ary);
+        $replace_ary = array_map(function ($v) use ($variable_prefix) {
+            return $variable_prefix.$v.'';
+        }, array_keys($except_ary));
+
+        $i            = 0;
+        $new_lang_ary = [];
+        foreach ($source_lang_ary as $key=> $source_lang_str) {
+            if (! strpos($source_lang_str, ':')) {
+                // continue;
+            }
+
+            $source_lang_str = str_replace($search_ary, $replace_ary, $source_lang_str);
+
+            $api_result = $this->baiduTranslate($source_lang_str, $translate_from, $translate_to);
+
+            if (isset($api_result['trans_result'][0]['dst'])) {
+                $translate_result = '';
+                foreach ($api_result['trans_result'] as $rs) {
+                    $translate_result .= ''.trim($rs['dst'])."\n";
+                }
+
+                $new_lang_ary[$key] =  trim($translate_result);
+
+                if ('page_number22' == $key) {
+                    $this->helper->debug($api_result);
+                }
+            }
+
+            if ($i > 3) {
+                // break;
+                // $this->helper->debug($new_lang_ary);
+            }
+
+            ++$i;
+        }
+
+        $new_lang_str = "<?php \n# This language file was automatically translated by Google AI, please edit it manually if you feel it not accurate \n\n return ".var_export($new_lang_ary, true)."; \n";
+
+        $search_ary   = $replace_ary;
+        $replace_ary  = array_values($except_ary);
+        $new_lang_str = str_replace($search_ary, $replace_ary, $new_lang_str);
+
+        // $this->helper->debug([$search_ary, $replace_ary,$new_lang_str]);
+
+        if (! file_exists(dirname($target_file))) {
+            mkdir(dirname($target_file), 0755);
+        }
+
+        file_put_contents($target_file, $new_lang_str);
+        echo '<hr>Generated language file: '.$target_file;
+        exit();
+    }
+
+    public function translateCmsLangFile_google()
+    {
+        $this->app_id   = $this->helper->s('plugin.page-tab-translator.app_id');
+        $this->app_key  = $this->helper->s('plugin.page-tab-translator.app_key');
+        $break_str      = '#';
+        $break_str_2    = '000 ';
+        // $google_lang_ary = [  'ar'=>'Arabic',  'hi'=>'Hindi', 'pt'=>'Portuguese',  'de'=>'German', 'ko'=>'Korean', 'it'=>'Italian', 'la'=>'Latin'];
+
+        $translate_from = request()->translate_from ?? 'en';
+        $translate_to   = request()->translate_to ?? 'es';
+        $file           = request()->file ?? 'cms.php';
+        if (! isset($this->google_lang_ary[$translate_to])) {
+            exit('wrong $translate_to '.$translate_to);
+        }
+        if ('zh' == $translate_to || 'en' == $translate_to) {
+            exit('Not allowed $translate_to '.$translate_to);
+        }
+
+        $source_file = base_path('resources/lang/vendor/laravel-cms/'.$translate_from.'/'.$file);
+        $target_file = base_path('resources/lang/vendor/laravel-cms/'.$translate_to.'/'.$file);
+        if (! file_exists($source_file)) {
+            exit($source_file.' not exists');
+        }
+        $source_lang_ary = include $source_file;
+        $except_ary      = [':Name', ':name', ':latest', ':current', ':number', '$helper->s(', ':BROKER'];
+        // $except_ary = [':Name',':name',':latest',':current',':number','$helper->s('];
+
+        $variable_prefix = '2020778899';
+
+        $source_lang_str = implode($break_str, array_values($source_lang_ary));
+
+        $search_ary  = array_values($except_ary);
+        $replace_ary = array_map(function ($v) use ($variable_prefix) {
+            return $variable_prefix.$v.'';
+        }, array_keys($except_ary));
+        $source_lang_str = str_replace($search_ary, $replace_ary, $source_lang_str);
+
+        $api_result = $this->baiduTranslate($source_lang_str, $translate_from, $translate_to);
+
+        try {
+            $tr         = new GoogleTranslateForFree();
+            $api_result = $tr->translate($translate_from, $translate_to, $source_lang_str, 2);
+        } catch (\Exception $e) {
+            exit($e->getMessage());
+        }
+
+        // $api_result = str_replace($break_str_2, $break_str, $api_result);
+        $translated_ary = explode($break_str, $api_result);
+        if (count($translated_ary) != count($source_lang_ary)) {
+            echo 'count($translated_ary) '.count($translated_ary).' not match count($source_lang_ary) '.count($source_lang_ary);
+            $i = 0;
+            foreach ($source_lang_ary as $key=>$val) {
+                echo $key.' => '.$val.' === '.($translated_ary[$i] ?? 'NONE').'<br>'."\n";
+                ++$i;
+            }
+
+            $this->helper->debug([$translated_ary, $source_lang_ary, $api_result]);
+        }
+        $search_ary     = $replace_ary;
+        $replace_ary    = array_values($except_ary);
+        $new_api_result = str_replace($search_ary, $replace_ary, $api_result);
+        $new_api_result = str_replace(':BROKER', '', $new_api_result);
+
+        $translated_ary = explode($break_str, $new_api_result);
+        $i              =0;
+        $new_lang_ary   = [];
+        foreach ($source_lang_ary as $key=>$val) {
+            echo $key.' => '.$val.' === '.$translated_ary[$i].'<br>'."\n";
+            $new_lang_ary[$key] = trim($translated_ary[$i]);
+            ++$i;
+        }
+
+        // $this->helper->debug([$search_ary, $replace_ary, $new_lang_ary]);
+
+        $new_lang_str = "<?php \n# This language file was automatically translated by Google AI, please edit it manually if you feel it not accurate \n\n return ".var_export($new_lang_ary, true)."; \n";
+
+        if (! file_exists(dirname($target_file))) {
+            mkdir(dirname($target_file), 0755);
+        }
+
+        file_put_contents($target_file, $new_lang_str);
+        echo '<hr>Generated language file: '.$target_file;
+        exit();
+    }
 
     // baidu FanYi translate
     public function baiduTranslate($query, $from, $to)
